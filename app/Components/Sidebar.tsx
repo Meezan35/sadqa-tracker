@@ -16,7 +16,7 @@ export default function Sidebar() {
   const sidebarItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
     { id: 'add-sadqa', label: 'Add Sadqa', icon: Plus, href: '#' }, // Change href to '#' or remove
-    { id: 'history', label: 'Sadqa History', icon: History, href: '/history' },
+    { id: 'history', label: 'Sadqa History', icon: History, href: '/sadqa-history' },
     { id: 'insights', label: 'Insights', icon: BarChart3, href: '/insights' },
     { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
   ];

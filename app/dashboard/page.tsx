@@ -17,7 +17,7 @@ const Loader = () => (
 
 export default function DashboardPage() {
   const { userName, setUserName } = useUser();
-const { isModalOpen, openModal, closeModal } = useModal();
+const { openModal,  } = useModal();
   const [loading, setLoading] = useState(false);
 
   const [sadqaData, setSadqaData] = useState<SadqaEntry[]>(() => {
@@ -45,9 +45,7 @@ const { isModalOpen, openModal, closeModal } = useModal();
     }
   };
 
-  const handleAddSadqa = (newEntry: SadqaEntry) => {
-    setSadqaData(prevData => [...prevData, newEntry]);
-  };
+ 
 
   if (loading) {
     return <Loader />;
@@ -78,11 +76,7 @@ const { isModalOpen, openModal, closeModal } = useModal();
         {/* Recent Sadqa component */}
         <RecentSadqa sadqaData={sadqaData} />
       </div>
-      <AddSadqaModal
-        isOpen={isModalOpen}
-        onClose={closeModal} // Use closeModal from context
-        onSubmit={handleAddSadqa}
-      />
+     
     </div>
   );
 }
