@@ -125,8 +125,7 @@ export default function SadqaHistoryPage() {
     setFilteredData(filtered);
   }, [sadqaData, startDate, endDate, selectedType, amountFilter]);
 
-  console.log('Sadqa Data:', sadqaData);
-  console.log('Filtered Data:', filteredData);
+
 
   const handleFilter = () => {
     // The filtering is already handled by useEffect above

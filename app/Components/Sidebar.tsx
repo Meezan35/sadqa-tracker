@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Plus, History, BarChart3, Settings, Menu, X } from 'lucide-react';
+import { Home, Plus, History, BarChart3, HelpingHand , Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useModal } from '../context/ModalContext'; // New import
@@ -15,10 +15,10 @@ export default function Sidebar() {
 
   const sidebarItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
-    { id: 'add-sadqa', label: 'Add Sadqa', icon: Plus, href: '#' }, // Change href to '#' or remove
+    { id: 'add-sadqa', label: 'Add Sadqa', icon: Plus, href: '#' },
     { id: 'history', label: 'Sadqa History', icon: History, href: '/sadqa-history' },
     { id: 'insights', label: 'Insights', icon: BarChart3, href: '/insights' },
-    { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
+    { id: 'Donation Requests', label: 'Donation Requests', icon: HelpingHand , href: '/donation-requests' },
   ];
 
   const toggleMobileMenu = () => {
