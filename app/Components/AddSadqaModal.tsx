@@ -19,7 +19,9 @@ interface AddSadqaModalProps {
   onSubmit: (data: SadqaEntry) => void;
 }
 
+// A custom modal component for adding a new sadqa entry
 export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaModalProps) {
+  // State to manage the form data
   const [formData, setFormData] = useState<SadqaEntry>({
     type: 'Money',
     amount: '',
@@ -28,9 +30,16 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
     date: new Date().toISOString().split('T')[0]
   });
   const [isReasonDropdownOpen, setIsReasonDropdownOpen] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const reasonDropdownRef = useRef<HTMLDivElement>(null);
 
+  // Get today's date in YYYY-MM-DD format for max date restriction
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0];
+  };
+
+  // Define the available sadqa types and their associated icons
   const sadqaTypes = [
     { value: 'Money', icon: DollarSign, color: 'green' },
     { value: 'Food', icon: User, color: 'orange' },
@@ -38,6 +47,7 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
     { value: 'Other', icon: Calendar, color: 'purple' }
   ];
 
+  // Define the predefined reasons for sadqa
   const reasonOptions = [
     'Nazar',
     'Illness',
@@ -48,6 +58,7 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
     'Other'
   ];
 
+  // Handle clicks outside the modal to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -63,6 +74,7 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
     };
   }, [onClose]);
 
+  // Handle selection from the reason dropdown
   const handleReasonSelect = (reason: string) => {
     setFormData(prev => ({
       ...prev,
@@ -71,18 +83,33 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
     setIsReasonDropdownOpen(false);
   };
 
+  // Handle changes in form inputs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    // Hide error message when user starts typing
+    if (showErrorMessage) {
+      setShowErrorMessage(false);
+    }
   };
 
+  // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.amount || !formData.receivedBy) {
-      alert('Please fill in all required fields');
+      setShowErrorMessage(true);
+      return;
+    }
+    
+    // Corrected date validation: Compare date strings directly
+    const todayDateString = getTodayDate();
+    if (formData.date > todayDateString) {
+      // Use a custom message box instead of alert()
+      // For this example, we'll just show an error message in the UI
+      setShowErrorMessage(true);
       return;
     }
     
@@ -105,11 +132,13 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
     onClose();
   };
 
+  // Helper to get icon color based on sadqa type
   const getIconColor = (type: string): string => {
     const typeData = sadqaTypes.find(t => t.value === type);
     return typeData ? typeData.color : 'green';
   };
 
+  // Helper to get icon component based on sadqa type
   const getIconComponent = (type: string): typeof DollarSign => {
     const typeData = sadqaTypes.find(t => t.value === type);
     return typeData ? typeData.icon : DollarSign;
@@ -138,6 +167,13 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
         {/* Form - This section will now scroll */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <form id="sadqa-form" onSubmit={handleSubmit} className="p-6 space-y-6 max-w-full">
+            {/* Error Message Display */}
+            {showErrorMessage && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm" role="alert">
+                Please fill in all required fields and ensure the date is not in the future.
+              </div>
+            )}
+            
             {/* Sadqa Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -152,7 +188,7 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
                       key={type.value}
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, type: type.value }))}
-                      className={`flex items-center justify-center p-3 rounded-lg border-2 transition-all ${
+                      className={`flex items-center justify-center p-3 rounded-lg border-2 transition-all cursor-pointer ${
                         isSelected
                           ? `border-${type.color}-500 bg-${type.color}-50`
                           : 'border-gray-200 hover:border-gray-300'
@@ -210,7 +246,7 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
                 <span className={formData.reason ? 'text-gray-900' : 'text-gray-500'}>
                   {formData.reason || 'Select a reason'}
                 </span>
-                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isReasonDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform cursor-pointer ${isReasonDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
               {isReasonDropdownOpen && (
@@ -266,7 +302,8 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
+                max={getTodayDate()}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors cursor-pointer"
                 required
               />
             </div>
@@ -315,14 +352,14 @@ export default function AddSadqaModal({ isOpen, onClose, onSubmit }: AddSadqaMod
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               form="sadqa-form"
-              className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+              className="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors cursor-pointer"
             >
               Add Sadqa
             </button>
